@@ -1,0 +1,54 @@
+name: Automated Commit
+
+on:
+  push:
+    branches: [main] # Trigger setiap kali ada push ke branch main
+
+  schedule:
+    - cron: '0 */12 * * *' # Jalan otomatis setiap 12 jam
+
+  workflow_dispatch: # Bisa dijalankan manual lewat UI GitHub
+
+permissions:
+  contents: write # Izinkan write ke repo
+
+jobs:
+  update_commit:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Setup Debug Info
+        run: echo "::debug::Triggered by ref = ${{github.ref}}"
+
+      - name: Checkout Code
+        uses: actions/checkout@v3
+        with:
+          persist-credentials: true
+          fetch-depth: 0
+
+      - name: Update Timestamp File
+        run: |
+          current_time=$(date '+%Y-%m-%d %H:%M:%S')
+          echo "Updated on $current_time" > TIMESTAMP.txt
+          echo "fauzanhl123@gmail.com" >> TIMESTAMP.txt
+          echo "cruzlx" >> TIMESTAMP.txt
+
+      - name: Setup Git Config
+        run: |
+          git config user.email "fauzanhl123@gmail.com"
+          git config user.name "cruzlx"
+
+      - name: Commit Changes
+        run: |
+          commit_messages=("Update: ⏰" "Refresh: 🔄" "Renew: 🌟" "Revise: 📝" "Amend: 🛠" "Adjust: 🔧" "Change: 📈" "Modify: 🖊" "Transform: 🌀" "Revamp: 🌈")
+          random_msg=${commit_messages[$RANDOM % ${#commit_messages[@]}]}
+          current_time=$(date '+%Y-%m-%d %H:%M:%S')
+
+          git add TIMESTAMP.txt
+          git commit -m "$random_msg - $current_time" || echo "No changes to commit."
+
+      - name: Push to GitHub
+        uses: ad-m/github-push-action@v0.6.0
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: main
