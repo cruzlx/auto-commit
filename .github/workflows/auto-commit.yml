@@ -28,8 +28,11 @@ jobs:
 
       - name: Update Timestamp File
         run: |
-          current_time=$(date '+%Y-%m-%d %H:%M:%S')
-          echo "Updated on $current_time" > TIMESTAMP.txt
+          utc_time=$(date -u '+%Y-%m-%d %H:%M:%S UTC')
+          wib_time=$(date -d '+7 hours' '+%Y-%m-%d %H:%M:%S WIB')
+          echo "Updated on:" > TIMESTAMP.txt
+          echo "🕒 UTC : $utc_time" >> TIMESTAMP.txt
+          echo "🌏 WIB : $wib_time" >> TIMESTAMP.txt
 
       - name: Setup Git Config
         run: |
